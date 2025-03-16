@@ -31,6 +31,12 @@ const YouTubeBackground = () => {
         }
       });
     };
+
+    // Cleanup function
+    return () => {
+      // Remove the global callback when component unmounts
+      window.onYouTubeIframeAPIReady = () => {};
+    };
   }, []);
 
   return (
