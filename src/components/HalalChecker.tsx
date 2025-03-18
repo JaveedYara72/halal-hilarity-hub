@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { Sparkles, Key } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Sparkles } from "lucide-react";
 
 const HalalChecker = () => {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiInput, setShowApiInput] = useState(false);
+  // Hardcoded API key - replace with your own API key
+  const apiKey = "YOUR_OPENAI_API_KEY_HERE";
   const { toast } = useToast();
 
   const checkHalal = async () => {
@@ -20,16 +20,6 @@ const HalalChecker = () => {
         description: "Type something first fam!",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (!apiKey.trim()) {
-      toast({
-        title: "No API Key 🔑",
-        description: "Add your OpenAI API key first!",
-        variant: "destructive",
-      });
-      setShowApiInput(true);
       return;
     }
 
@@ -62,9 +52,6 @@ const HalalChecker = () => {
       const data = await result.json();
       setResponse(data.choices[0].message.content);
       
-      // Save API key to localStorage for future use
-      localStorage.setItem("openai_api_key", apiKey);
-      
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -77,46 +64,8 @@ const HalalChecker = () => {
     }
   };
 
-  // Load API key from localStorage on component mount
-  React.useEffect(() => {
-    const savedApiKey = localStorage.getItem("openai_api_key");
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    } else {
-      setShowApiInput(true);
-    }
-  }, []);
-
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
-      {showApiInput && (
-        <div className="mb-4 relative">
-          <div className="flex items-center mb-2">
-            <Key className="h-4 w-4 mr-2 text-emerald" />
-            <span className="text-white text-sm">Enter your OpenAI API key:</span>
-          </div>
-          <Input
-            className="bg-white/10 backdrop-blur-md border-emerald/30 text-white placeholder:text-white/50"
-            type="password"
-            placeholder="sk-..."
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
-          <div className="mt-1">
-            <span className="text-white/50 text-xs">Your key is stored locally and never sent to our servers</span>
-          </div>
-          {apiKey && (
-            <Button 
-              className="mt-2 bg-emerald hover:bg-emerald-dark transition-all duration-300"
-              size="sm"
-              onClick={() => setShowApiInput(false)}
-            >
-              Save Key
-            </Button>
-          )}
-        </div>
-      )}
-
       <div className="relative">
         <Input
           className="bg-white/10 backdrop-blur-md border-emerald/30 text-white placeholder:text-white/50 h-14 pr-32"
@@ -139,17 +88,6 @@ const HalalChecker = () => {
           )}
         </Button>
       </div>
-
-      {!apiKey && !showApiInput && (
-        <div className="flex justify-end mt-1">
-          <button
-            onClick={() => setShowApiInput(true)}
-            className="text-emerald underline text-xs hover:text-emerald-dark"
-          >
-            Change API Key
-          </button>
-        </div>
-      )}
 
       {response && (
         <div className="mt-6 p-4 bg-white/10 backdrop-blur-md rounded-lg border border-purple/30 animate-float">
