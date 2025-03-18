@@ -20,7 +20,7 @@ const YouTubeBackground = () => {
           loop: 1,
           controls: 0,
           showinfo: 0,
-          mute: 0,
+          mute: 1, // Changed to 1 to enable autoplay (browsers require muting for autoplay)
           playsinline: 1,
           playlist: 'qIQtvlZWvqo'
         },
@@ -48,3 +48,4 @@ const YouTubeBackground = () => {
 };
 
 export default YouTubeBackground;
+
