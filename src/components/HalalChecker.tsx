@@ -9,8 +9,8 @@ const HalalChecker = () => {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  // Hardcoded API key - replace with your own API key
-  const apiKey = "YOUR_OPENAI_API_KEY_HERE";
+  // API key
+  const apiKey = "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";
   const { toast } = useToast();
 
   const checkHalal = async () => {
