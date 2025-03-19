@@ -41,11 +41,11 @@ const YouTubeBackground = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/30" /> {/* This is the main background overlay */}
+      <div className="absolute inset-0 bg-black/24" /> {/* Added a second overlay with 24% opacity */}
       <div ref={playerRef} className="w-full h-full" />
     </div>
   );
 };
 
 export default YouTubeBackground;
-
