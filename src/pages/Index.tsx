@@ -13,11 +13,8 @@ const Index = () => {
           <div className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-emerald/30 mb-4 animate-glow">
             <span className="text-white text-sm font-medium">🌙 Halal Check</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple via-[#D946EF] to-emerald bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] animate-pulse hover:scale-105 transition-transform cursor-default">
-            <span className="relative">
-              <span className="absolute -inset-1 blur-md bg-black/30 rounded-lg"></span>
-              <span className="relative">Halal ✨🌙 or Haram 👿💀?</span>
-            </span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple via-[#D946EF] to-emerald bg-clip-text text-transparent animate-pulse hover:scale-105 transition-transform cursor-default">
+            Halal ✨🌙 or Haram 👿💀?
           </h1>
           <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto">
             Ask anything, get instant halal verdicts with that extra spice! 🌶️
