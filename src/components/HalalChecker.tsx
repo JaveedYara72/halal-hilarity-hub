@@ -1,19 +1,20 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
 const HalalChecker = () => {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
+  
   // API key
   const apiKey = "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";
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
   // Basic fallback responses when API is unavailable
   const fallbackResponses = {
@@ -23,6 +24,7 @@ const HalalChecker = () => {
     music: "DEBATED! 🤔 Some scholars say music is haram, others say it's fine if the content is clean. It's complicated, bestie! 🎵",
     default: "I can't check that right now! The halal-meter is offline! Maybe try something simple like 'pork' or 'prayer'? 🤷‍♂️"
   };
+
   const getFallbackResponse = (query: string) => {
     query = query.toLowerCase();
     if (query.includes('alcohol') || query.includes('beer') || query.includes('wine')) {
@@ -36,6 +38,34 @@ const HalalChecker = () => {
     }
     return fallbackResponses.default;
   };
+
+  // Function to clean up AI response by removing silence phrases
+  const cleanupResponse = (text: string) => {
+    // List of phrases to remove
+    const phrasesToRemove = [
+      "*cue the dramatic music and a minute of silence...*",
+      "*cue dramatic music for a minute of silence*",
+      "*one minute of silence...*",
+      "*minute of silence*",
+      "...a minute of silence...",
+      "*silence for a minute*"
+    ];
+    
+    let cleanedText = text;
+    
+    // Make the search case insensitive
+    phrasesToRemove.forEach(phrase => {
+      const regex = new RegExp(phrase, 'gi');
+      cleanedText = cleanedText.replace(regex, '');
+    });
+    
+    // Remove any empty lines created by removing the phrases
+    cleanedText = cleanedText.replace(/^\s*[\r\n]/gm, '');
+    
+    // Trim extra whitespace
+    return cleanedText.trim();
+  };
+
   const checkHalal = async () => {
     if (!prompt.trim()) {
       toast({
@@ -45,7 +75,9 @@ const HalalChecker = () => {
       });
       return;
     }
+
     setLoading(true);
+
     try {
       // If using fallback mode, don't make API call
       if (useFallback) {
@@ -55,7 +87,9 @@ const HalalChecker = () => {
         }, 700); // Slight delay to simulate processing
         return;
       }
-      const systemPrompt = "You are a halal-or-haram expert with an edgy and funny personality. Be direct, sarcastic, and suitable for Gen Alpha teens. Use slang, humor, and memes where appropriate. Your task is to determine if something is halal (permissible) or haram (forbidden) in Islam. Respond with a clear verdict (HALAL or HARAM) and a brief, humorous explanation. Be very wild with your answers, edgy, everytime you give an answer there should be a minute of silence.";
+
+      const systemPrompt = "You are a halal-or-haram expert with an edgy and funny personality. Be direct, sarcastic, and suitable for Gen Alpha teens. Use slang, humor, and memes where appropriate. Your task is to determine if something is halal (permissible) or haram (forbidden) in Islam. Respond with a clear verdict (HALAL or HARAM) and a brief, humorous explanation. Be very edgy with your answers.";
+      
       const result = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -64,17 +98,21 @@ const HalalChecker = () => {
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
-          messages: [{
-            role: "system",
-            content: systemPrompt
-          }, {
-            role: "user",
-            content: prompt
-          }],
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
           max_tokens: 500,
           temperature: 0.7
         })
       });
+
       if (!result.ok) {
         const error = await result.json();
 
@@ -84,8 +122,12 @@ const HalalChecker = () => {
         }
         throw new Error(error.error?.message || "Failed to get response");
       }
+
       const data = await result.json();
-      setResponse(data.choices[0].message.content);
+      // Clean up response before setting it
+      const cleanedResponse = cleanupResponse(data.choices[0].message.content);
+      setResponse(cleanedResponse);
+      
     } catch (error) {
       console.error("Error:", error);
       const errorMessage = error instanceof Error ? error.message : "Something went wrong! Check your API key or try again later.";
@@ -108,6 +150,7 @@ const HalalChecker = () => {
       setLoading(false);
     }
   };
+
   return <div className="w-full max-w-2xl mx-auto px-4">
       <div className="relative">
         <Input className="bg-white/10 backdrop-blur-md border-emerald/30 text-white placeholder:text-white/50 h-14 pr-32" placeholder="Is it halal if..." value={prompt} onChange={e => setPrompt(e.target.value)} onKeyPress={e => e.key === 'Enter' && checkHalal()} />
@@ -133,4 +176,5 @@ const HalalChecker = () => {
         </div>}
     </div>;
 };
+
 export default HalalChecker;
