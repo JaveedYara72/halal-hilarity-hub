@@ -14,28 +14,51 @@ const YouTubeBackground = () => {
     // Create YouTube player when API is ready
     window.onYouTubeIframeAPIReady = () => {
       new window.YT.Player(playerRef.current!, {
-        videoId: 'qIQtvlZWvqo',
+        videoId: 'qIQtvlZWvqo', // Keep the same video
         playerVars: {
           autoplay: 1,
           loop: 1,
           controls: 0,
           showinfo: 0,
-          mute: 1, // Changed to 1 to enable autoplay (browsers require muting for autoplay)
+          rel: 0,
+          iv_load_policy: 3, // Hide annotations
+          modestbranding: 1, // Hide YouTube logo
+          fs: 0, // Hide fullscreen button
+          cc_load_policy: 0, // Hide closed captions
+          disablekb: 1, // Disable keyboard controls
+          mute: 1, // Muted for autoplay (browser requirement)
           playsinline: 1,
-          playlist: 'qIQtvlZWvqo'
+          playlist: 'qIQtvlZWvqo',
+          origin: window.location.origin
         },
         events: {
           onReady: (event) => {
             event.target.playVideo();
+          },
+          onStateChange: (event) => {
+            // If video ends, restart it
+            if (event.data === window.YT.PlayerState.ENDED) {
+              event.target.playVideo();
+            }
           }
         }
       });
     };
 
+    // Add custom CSS to hide YouTube elements
+    const style = document.createElement('style');
+    style.textContent = `
+      .ytp-chrome-top, .ytp-chrome-bottom, .ytp-watermark, .ytp-pause-overlay {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
     // Cleanup function
     return () => {
       // Remove the global callback when component unmounts
       window.onYouTubeIframeAPIReady = () => {};
+      document.head.removeChild(style);
     };
   }, []);
 
